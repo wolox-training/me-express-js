@@ -1,23 +1,28 @@
 const logger = require('../../logger');
+const userMapper = require('../../mappers/user_mapper');
+const userSerializer = require('../../serializers/user_serializer');
+
 const { User } = require('../../models');
 const { validate } = require('../validations/user_validation');
 const { encriptionPassword } = require('../../helpers/encription_password');
 
 exports.registerController = {
   create: async (req, res) => {
-    await validate(req.query)
+    const userMapped = userMapper(req.body);
+    await validate(userMapped)
       .then(() => {
-        req.query.password = encriptionPassword(req.query.password);
-        return User.create(req.query);
+        userMapped.password = encriptionPassword(userMapped.password);
+        return User.create(userMapped);
       })
-      .then(user => {
-        logger.info(user.firstName);
-        res.json(`Welcome ${user.lastName} ${user.firstName} `);
+      .then(userCreated => {
+        logger.info(userCreated.firstName);
+        return userSerializer(req, userCreated);
       })
+      .then(user => res.send(user))
       .catch(err => {
         logger.error(err);
-        if (err.status === 422) res.status(err.status).json(err);
-        res.status(500).json('Internal server error');
+        if (err.status === 422) return res.status(err.status).json(err);
+        return res.status(500).json('Internal server error');
       });
   }
 };
