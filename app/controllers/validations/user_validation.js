@@ -32,8 +32,8 @@ exports.validate = async req => {
     if (emailError || passwordError || firstNameError || lastNameError) {
       error.errors.email = [emailError];
       error.errors.password = [passwordError];
-      error.errors.firstName = [firstNameError];
-      error.errors.lastNameError = [lastNameError];
+      error.errors.first_name = [firstNameError];
+      error.errors.last_name = [lastNameError];
       return reject(error);
     }
     return resolve();
