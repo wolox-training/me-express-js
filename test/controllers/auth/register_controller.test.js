@@ -2,6 +2,7 @@ const request = require('supertest');
 
 const app = require('../../../app');
 const userFactory = require('../../factory/user_factory');
+const userMapper = require('../../mappers/user_mapper');
 
 describe('POST /users', () => {
   const attributes = ['email', 'first_name', 'last_name', 'password'];
@@ -9,7 +10,7 @@ describe('POST /users', () => {
 
   describe('Valid user', () => {
     beforeAll(async done => {
-      const user = await userFactory.attributes();
+      const user = userMapper(await userFactory.attributes());
       response = await request(app)
         .post('/users')
         .send(user);
@@ -53,7 +54,7 @@ describe('POST /users', () => {
     attributes.forEach(attribute => {
       describe(`without ${attribute}`, () => {
         beforeAll(async done => {
-          const user = await userFactory.attributes();
+          const user = userMapper(await userFactory.attributes());
 
           delete user[attribute];
 
@@ -79,6 +80,31 @@ describe('POST /users', () => {
             }
           });
         });
+      });
+    });
+
+    describe('email already exists', () => {
+      beforeAll(async done => {
+        const userPersistance = await userFactory.create();
+        const user = userMapper(await userFactory.attributes({ email: userPersistance.email }));
+
+        response = await request(app)
+          .post('/users')
+          .send(user);
+        done();
+      });
+
+      test('status 422', () => {
+        expect(response.statusCode).toBe(422);
+      });
+
+      test('response does contain error', () => {
+        expect(response.body.errors).not.toBe(undefined);
+      });
+
+      test('error message if it already exists', () => {
+        const message = response.body.errors.email.toString();
+        expect(message).toMatch(/already exists/);
       });
     });
   });
