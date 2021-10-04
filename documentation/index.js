@@ -8,7 +8,7 @@ module.exports = {
   openapi: '3.0.1',
   info: {
     version: '0.1.0',
-    title: 'WTraining',
+    title: 'me-express-js',
     description: 'WTraining',
     termsOfService: '',
     contact: {
@@ -31,11 +31,7 @@ module.exports = {
     }
   ],
   security: [],
-  tags: [
-    {
-      name: 'CRUD operations'
-    }
-  ],
+  tags: [],
   paths,
   components: {
     schemas,

@@ -5,11 +5,37 @@ module.exports = {
   Error: {
     type: 'object',
     properties: {
-      message: {
-        type: 'string'
+      status: {
+        type: 'integer'
       },
-      internal_code: {
-        type: 'string'
+      errors: {
+        type: 'object',
+        properties: {
+          email: {
+            type: 'array',
+            items: {
+              type: 'string'
+            }
+          },
+          password: {
+            type: 'array',
+            items: {
+              type: 'string'
+            }
+          },
+          first_name: {
+            type: 'array',
+            items: {
+              type: 'string'
+            }
+          },
+          last_name: {
+            type: 'array',
+            items: {
+              type: 'string'
+            }
+          }
+        }
       }
     }
   }

@@ -1,43 +1,15 @@
 module.exports = {
   '/users': {
-    get: {
-      tags: ['CRUD operations'],
-      description: 'Get users',
-      operationId: 'getUsers',
-      parameters: [
-        {
-          name: 'page',
-          in: 'query',
-          schema: {
-            type: 'integer',
-            default: 1
-          },
-          required: false
-        }
-      ],
-      responses: {
-        200: {
-          description: 'Users were obtained',
-          content: {
-            'application/json': {
-              schema: {
-                $ref: '#/components/schemas/Users'
-              }
-            }
-          }
-        }
-      }
-    },
     post: {
-      tags: ['CRUD operations'],
-      description: 'Create user',
-      operationId: 'createUser',
+      tags: ['Sign up operation'],
+      description: 'Register user',
+      operationId: 'registerUser',
       parameters: [],
       requestBody: {
         content: {
           'application/json': {
             schema: {
-              $ref: '#/components/schemas/User'
+              $ref: '#/components/schemas/UserRequest'
             }
           }
         },
@@ -45,18 +17,30 @@ module.exports = {
       },
       responses: {
         200: {
-          description: 'New user was created'
+          description: 'New user register',
+          content: {
+            'application/json': {
+              schema: {
+                $ref: '#/components/schemas/User'
+              }
+            }
+          }
         },
-        400: {
-          description: 'Invalid parameters',
+        422: {
+          description: 'Unprocessable Entity',
           content: {
             'application/json': {
               schema: {
                 $ref: '#/components/schemas/Error'
               },
               example: {
-                message: 'User´s email already exists',
-                internal_code: 'invalid_parameters'
+                status: 422,
+                errors: {
+                  email: ['format invalid'],
+                  password: ['only alphanumeric and greater than 7 characters'],
+                  first_name: ['not empty'],
+                  last_name: ['not empty']
+                }
               }
             }
           }
